@@ -56,7 +56,7 @@ Future<WeatherDay> getWeather(final String location) async {
           temp: hour['temp_c'],
           condition: Condition(
               text: hour['condition']['text'],
-              icon: Uri.parse(hour['condition']['icon'])),
+              icon: Uri.parse('https:${hour['condition']['icon']}')),
           feelsLike: hour['feelslike_c'],
           rainChance: hour['chance_of_rain']));
     }
