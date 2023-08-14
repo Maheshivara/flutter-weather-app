@@ -1,6 +1,4 @@
-import 'dart:ffi';
-
-import 'package:flutter/material.dart';
+import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 Future<http.Response> fetchWeather(final String location) {
@@ -21,10 +19,10 @@ class Condition {
 }
 
 class WeatherHour {
-  final Float temp;
+  final double temp;
   final Condition condition;
-  final Float feelsLike;
-  final Int rainChance;
+  final double feelsLike;
+  final int rainChance;
 
   const WeatherHour({
     required this.temp,
@@ -38,10 +36,38 @@ class WeatherDay {
   final String name;
   final String region;
   final String tzId;
-  final List<WeatherDay> hours;
+  final List<WeatherHour> hours;
   const WeatherDay(
       {required this.name,
       required this.region,
       required this.tzId,
       required this.hours});
+}
+
+Future<WeatherDay> getWeather(final String location) async {
+  final response = await fetchWeather(location);
+  if (response.statusCode == 200) {
+    final Map<String, dynamic> myMap = jsonDecode(response.body);
+    final List<dynamic> hoursJson = myMap['forecast']['forecastday'][0]['hour'];
+
+    final List<WeatherHour> hours = [];
+    for (final hour in hoursJson) {
+      hours.add(WeatherHour(
+          temp: hour['temp_c'],
+          condition: Condition(
+              text: hour['condition']['text'],
+              icon: Uri.parse(hour['condition']['icon'])),
+          feelsLike: hour['feelslike_c'],
+          rainChance: hour['chance_of_rain']));
+    }
+
+    final String name = myMap['location']['name'];
+    final String region = myMap['location']['region'];
+    final String tzId = myMap['location']['tz_id'];
+    final WeatherDay weather =
+        WeatherDay(name: name, region: region, tzId: tzId, hours: hours);
+    return weather;
+  } else {
+    throw Exception('Falha ao consultar a API');
+  }
 }
