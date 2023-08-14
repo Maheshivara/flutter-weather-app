@@ -1,5 +1,6 @@
 import 'dart:ffi';
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 Future<http.Response> fetchWeather(final String location) {
@@ -16,5 +17,19 @@ class Condition {
   const Condition({
     required this.text,
     required this.icon,
+  });
+}
+
+class WeatherHour {
+  final Float temp;
+  final Condition condition;
+  final Float feelsLike;
+  final Int rainChance;
+
+  const WeatherHour({
+    required this.temp,
+    required this.condition,
+    required this.feelsLike,
+    required this.rainChance,
   });
 }
