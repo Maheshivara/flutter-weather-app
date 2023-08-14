@@ -33,3 +33,15 @@ class WeatherHour {
     required this.rainChance,
   });
 }
+
+class WeatherDay {
+  final String name;
+  final String region;
+  final String tzId;
+  final List<WeatherDay> hours;
+  const WeatherDay(
+      {required this.name,
+      required this.region,
+      required this.tzId,
+      required this.hours});
+}
