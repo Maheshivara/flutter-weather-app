@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:http/http.dart' as http;
 
 Future<http.Response> fetchWeather(final String location) {
@@ -5,4 +7,14 @@ Future<http.Response> fetchWeather(final String location) {
   final weather = http.get(Uri.parse(
       'https://api.weatherapi.com/v1/forecast.json?key=$apiKey&q=$location&days=1&aqi=no&alerts=no'));
   return weather;
+}
+
+class Condition {
+  final String text;
+  final Uri icon;
+
+  const Condition({
+    required this.text,
+    required this.icon,
+  });
 }
