@@ -15,7 +15,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Weather App',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color.fromARGB(255, 164, 214, 163)),
         useMaterial3: true,
       ),
       home: const MyHomePage(title: 'Weather Preview'),
@@ -72,18 +73,31 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
+        titleTextStyle: const TextStyle(
+            fontWeight: FontWeight.bold, fontSize: 25, color: Colors.black),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
       body: Center(
         child: Column(
           children: [
+            const Text(
+              "Cidade para consultar:",
+              textAlign: TextAlign.center,
+            ),
             TextField(
+              textCapitalization: TextCapitalization.words,
+              textAlign: TextAlign.center,
               controller: _inputController,
             ),
             Padding(
               padding: const EdgeInsets.all(10),
-              child: Text(_locationInfo),
+              child: Text(
+                _locationInfo,
+                softWrap: true,
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              ),
             ),
             Expanded(
               child: Center(
@@ -92,7 +106,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   itemCount: _hoursWidgets.isEmpty ? 1 : _hoursWidgets.length,
                   itemBuilder: (context, index) {
                     if (_hoursWidgets.isEmpty) {
-                      return Text(_msg);
+                      return Center(
+                        child: Text(_msg),
+                      );
                     } else {
                       return Padding(
                         padding: const EdgeInsets.all(10),
