@@ -9,8 +9,9 @@ class HourWidget extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         constraints: const BoxConstraints(maxHeight: 100),
         decoration: BoxDecoration(
-            border: Border.all(color: Colors.black, width: 2),
-            borderRadius: const BorderRadius.all(Radius.circular(10))),
+          border: Border.all(color: Colors.black, width: 2),
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
+        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -27,9 +28,10 @@ class HourWidget extends StatelessWidget {
                       child: Text(
                         '${index.toString().padLeft(2, '0')}:00',
                         style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black),
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
                   ),
