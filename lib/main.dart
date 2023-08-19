@@ -1,3 +1,4 @@
+import 'package:diacritic/diacritic.dart';
 import 'package:flutter/material.dart';
 import 'package:weather/elements/hour_widget.dart';
 import 'package:weather/weather_api/weather.dart';
@@ -52,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     try {
-      final response = await getWeather(_location);
+      final response = await getWeather(removeDiacritics(_location));
       setState(() {
         _locationInfo = '${response.name}/ ${response.region}';
         response.hours.asMap().forEach((key, hour) {
