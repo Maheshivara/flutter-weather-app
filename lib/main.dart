@@ -1,6 +1,5 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
+import 'package:weather/elements/hour_widget.dart';
 import 'package:weather/weather_api/weather.dart';
 
 void main() {
@@ -34,18 +33,36 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String _text = 'teste';
+  String _location = '';
+  String _locationInfo = '';
+  String _msg = 'Please Search For a City';
+  List<HourWidget> _hoursWidgets = [];
+  final TextEditingController _inputController = TextEditingController();
 
-  void _incrementCounter() async {
-    try {
-      final response = await getWeather('Europe/London');
-      inspect(response);
+  void _fetchWeather() async {
+    _hoursWidgets = [];
+    if (_inputController.text.isNotEmpty) {
+      _location = _inputController.text;
+    } else {
       setState(() {
-        _text = '${response.name.toString()}, ${response.tzId.toString()}';
+        _msg = 'Please Search For a City';
+      });
+      return;
+    }
+
+    try {
+      final response = await getWeather(_location);
+      setState(() {
+        _locationInfo = '${response.name}/ ${response.region}';
+        response.hours.asMap().forEach((key, hour) {
+          _hoursWidgets.add(HourWidget(hourInfo: hour, index: key));
+        });
       });
     } catch (error) {
       setState(() {
-        _text = 'Falha ao consultar a API';
+        _locationInfo = '';
+        _hoursWidgets = [];
+        _msg = error.toString();
       });
     }
   }
@@ -55,24 +72,43 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: Center(
+          child: Text(widget.title),
+        ),
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'API response:',
+          children: [
+            TextField(
+              controller: _inputController,
             ),
-            Text(
-              _text,
-              style: Theme.of(context).textTheme.headlineMedium,
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Text(_locationInfo),
             ),
+            Expanded(
+              child: Center(
+                child: ListView.builder(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  itemCount: _hoursWidgets.isEmpty ? 1 : _hoursWidgets.length,
+                  itemBuilder: (context, index) {
+                    if (_hoursWidgets.isEmpty) {
+                      return Text(_msg);
+                    } else {
+                      return Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: _hoursWidgets[index],
+                      );
+                    }
+                  },
+                ),
+              ),
+            )
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: _fetchWeather,
         tooltip: 'Consultar',
         child: const Icon(Icons.search),
       ),
