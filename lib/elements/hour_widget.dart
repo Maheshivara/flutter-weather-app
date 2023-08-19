@@ -42,8 +42,8 @@ class HourWidget extends StatelessWidget {
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Text('Temp: ${hourInfo.temp.toString()}'),
-                    Text('Sen. Term.: ${hourInfo.feelsLike.toString()}'),
+                    Text('Temp: ${hourInfo.temp.toString()} °C'),
+                    Text('Sen. Term.: ${hourInfo.feelsLike.toString()} °C'),
                     Text('% Chuva: ${hourInfo.rainChance.toString()}')
                   ]),
             ),

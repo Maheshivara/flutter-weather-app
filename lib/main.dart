@@ -1,3 +1,4 @@
+import 'package:diacritic/diacritic.dart';
 import 'package:flutter/material.dart';
 import 'package:weather/elements/hour_widget.dart';
 import 'package:weather/weather_api/weather.dart';
@@ -15,10 +16,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Weather App',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color.fromARGB(255, 164, 214, 163)),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Weather Home Page'),
+      home: const MyHomePage(title: 'Weather Preview'),
     );
   }
 }
@@ -51,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     try {
-      final response = await getWeather(_location);
+      final response = await getWeather(removeDiacritics(_location));
       setState(() {
         _locationInfo = '${response.name}/ ${response.region}';
         response.hours.asMap().forEach((key, hour) {
@@ -69,48 +71,65 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Center(
-          child: Text(widget.title),
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          titleTextStyle: const TextStyle(
+              fontWeight: FontWeight.bold, fontSize: 25, color: Colors.black),
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: Text(widget.title),
         ),
-      ),
-      body: Center(
-        child: Column(
-          children: [
-            TextField(
-              controller: _inputController,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: Text(_locationInfo),
-            ),
-            Expanded(
-              child: Center(
-                child: ListView.builder(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  itemCount: _hoursWidgets.isEmpty ? 1 : _hoursWidgets.length,
-                  itemBuilder: (context, index) {
-                    if (_hoursWidgets.isEmpty) {
-                      return Text(_msg);
-                    } else {
-                      return Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: _hoursWidgets[index],
-                      );
-                    }
-                  },
+        body: Center(
+          child: Column(
+            children: [
+              const Text(
+                "Cidade para consultar:",
+                textAlign: TextAlign.center,
+              ),
+              TextField(
+                textCapitalization: TextCapitalization.words,
+                textAlign: TextAlign.center,
+                controller: _inputController,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: Text(
+                  _locationInfo,
+                  softWrap: true,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 20),
                 ),
               ),
-            )
-          ],
+              Expanded(
+                child: Center(
+                  child: ListView.builder(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    itemCount: _hoursWidgets.isEmpty ? 1 : _hoursWidgets.length,
+                    itemBuilder: (context, index) {
+                      if (_hoursWidgets.isEmpty) {
+                        return Center(
+                          child: Text(_msg),
+                        );
+                      } else {
+                        return Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: _hoursWidgets[index],
+                        );
+                      }
+                    },
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _fetchWeather,
-        tooltip: 'Consultar',
-        child: const Icon(Icons.search),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _fetchWeather,
+          tooltip: 'Consultar',
+          child: const Icon(Icons.search),
+        ),
       ),
     );
   }
