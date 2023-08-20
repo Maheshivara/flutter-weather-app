@@ -39,6 +39,7 @@ class HourWidget extends StatelessWidget {
               ),
             ),
             Expanded(
+              flex: 2,
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
