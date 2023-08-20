@@ -73,12 +73,13 @@ Future<WeatherDay> getWeather(final String location) async {
     final List<WeatherHour> hours = [];
     for (final hour in hoursJson) {
       hours.add(WeatherHour(
-          temp: hour['temp_c'],
-          condition: Condition(
-              text: hour['condition']['text'],
-              icon: Uri.parse('https:${hour['condition']['icon']}')),
-          feelsLike: hour['feelslike_c'],
-          rainChance: hour['chance_of_rain']));
+        temp: hour['temp_c'],
+        condition: Condition(
+            text: hour['condition']['text'],
+            icon: Uri.parse('https:${hour['condition']['icon']}')),
+        feelsLike: hour['feelslike_c'],
+        rainChance: hour['chance_of_rain'],
+      ));
     }
 
     final String name = myMap['location']['name'];
@@ -87,6 +88,25 @@ Future<WeatherDay> getWeather(final String location) async {
     final WeatherDay weather =
         WeatherDay(name: name, region: region, tzId: tzId, hours: hours);
     return weather;
+  } else {
+    throw Exception('Falha ao consultar a API');
+  }
+}
+
+Future<List<Location>> getLocations(final String location) async {
+  final response = await fetchLocations(location);
+  if (response.statusCode == 200) {
+    final Map<String, dynamic> myMap = jsonDecode(response.body);
+
+    final List<Location> foundCities = [];
+    for (final city in myMap.values) {
+      foundCities.add(Location(
+        name: city['name'],
+        region: city['region'],
+        country: city['country'],
+      ));
+    }
+    return foundCities;
   } else {
     throw Exception('Falha ao consultar a API');
   }
