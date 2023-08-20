@@ -12,7 +12,7 @@ Future<http.Response> fetchWeather(final String location) {
 
 Future<http.Response> fetchLocations(final String location) {
   final locations = http.get(Uri.parse(
-      'https://api.weatherapi.com/v1/forecast.json?key=$apiKey&q=$location'));
+      'https://api.weatherapi.com/v1/search.json?key=$apiKey&q=$location'));
   return locations;
 }
 
