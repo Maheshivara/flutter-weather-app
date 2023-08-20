@@ -88,9 +88,11 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Expanded(
+              SizedBox(
+                height: (60 * (cities.length - 1)) + 100,
                 child: LocationWidget(
                     cities: cities,
                     fetchWeather: _fetchWeather,
