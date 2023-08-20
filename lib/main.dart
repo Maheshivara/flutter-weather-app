@@ -1,6 +1,7 @@
 import 'package:diacritic/diacritic.dart';
 import 'package:flutter/material.dart';
 import 'package:weather/elements/hour_widget.dart';
+import 'package:weather/elements/location_widget.dart';
 import 'package:weather/weather_api/weather.dart';
 
 void main() {
@@ -37,23 +38,83 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String _location = '';
   String _locationInfo = '';
-  String _msg = 'Please Search For a City';
+  String _msg = 'Por favor procure por uma cidade';
   List<HourWidget> _hoursWidgets = [];
   final TextEditingController _inputController = TextEditingController();
 
-  void _fetchWeather() async {
-    _hoursWidgets = [];
-    if (_inputController.text.isNotEmpty) {
-      _location = _inputController.text;
-    } else {
+  void _fetchLocation() async {
+    final input = removeDiacritics(_inputController.text);
+    if (input.isEmpty) {
       setState(() {
-        _msg = 'Please Search For a City';
+        _locationInfo = '';
+        _hoursWidgets = [];
+        _msg = 'Por favor procure por uma cidade';
       });
       return;
     }
-
+    if (input.length < 3) {
+      setState(() {
+        _locationInfo = '';
+        _hoursWidgets = [];
+        _msg = 'Necessário ao menos 3 caracteres';
+      });
+      return;
+    }
+    _location = input;
     try {
-      final response = await getWeather(removeDiacritics(_location));
+      final cities = await getLocations(_location);
+      if (cities.isEmpty) {
+        setState(() {
+          _locationInfo = '';
+          _hoursWidgets = [];
+          _msg = 'Não foram encontradas cidades com o nome $_location';
+        });
+      } else {
+        _showDialog(cities);
+      }
+    } catch (error) {
+      setState(() {
+        _locationInfo = '';
+        _hoursWidgets = [];
+        _msg = error.toString();
+      });
+    }
+  }
+
+  void _showDialog(List<Location> cities) {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => Dialog(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(
+                height: (60 * (cities.length - 1)) + 100,
+                child: LocationWidget(
+                    cities: cities,
+                    fetchWeather: _fetchWeather,
+                    dispose: () => Navigator.pop(context)),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Sair'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _fetchWeather(final String location) async {
+    _hoursWidgets = [];
+    try {
+      final response = await getWeather((location));
       setState(() {
         _locationInfo = '${response.name}/ ${response.region}';
         response.hours.asMap().forEach((key, hour) {
@@ -84,14 +145,30 @@ class _MyHomePageState extends State<MyHomePage> {
         body: Center(
           child: Column(
             children: [
-              const Text(
-                "Cidade para consultar:",
-                textAlign: TextAlign.center,
-              ),
-              TextField(
-                textCapitalization: TextCapitalization.words,
-                textAlign: TextAlign.center,
-                controller: _inputController,
+              Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: TextField(
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(10),
+                            ),
+                          ),
+                          labelText: 'Nome da Cidade:',
+                        ),
+                        textCapitalization: TextCapitalization.words,
+                        textAlign: TextAlign.center,
+                        controller: _inputController,
+                      ),
+                    ),
+                  ),
+                  ElevatedButton(
+                      onPressed: _fetchLocation,
+                      child: const Icon(Icons.search))
+                ],
               ),
               Padding(
                 padding: const EdgeInsets.all(10),
@@ -124,11 +201,6 @@ class _MyHomePageState extends State<MyHomePage> {
               )
             ],
           ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: _fetchWeather,
-          tooltip: 'Consultar',
-          child: const Icon(Icons.search),
         ),
       ),
     );
