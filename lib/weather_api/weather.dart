@@ -95,11 +95,11 @@ Future<WeatherDay> getWeather(final String location) async {
 
 Future<List<Location>> getLocations(final String location) async {
   final response = await fetchLocations(location);
-  if (response.statusCode == 200) {
-    final Map<String, dynamic> myMap = jsonDecode(response.body);
 
+  if (response.statusCode == 200) {
+    final cities = json.decode(response.body);
     final List<Location> foundCities = [];
-    for (final city in myMap.values) {
+    for (final city in cities) {
       foundCities.add(Location(
         name: city['name'],
         region: city['region'],
