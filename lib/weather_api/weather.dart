@@ -2,11 +2,18 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:weather/weather_api/secrets.dart';
 
+final apiKey = Secrets().apiKey;
+
 Future<http.Response> fetchWeather(final String location) {
-  final apiKey = Secrets().apiKey;
   final weather = http.get(Uri.parse(
       'https://api.weatherapi.com/v1/forecast.json?key=$apiKey&q=$location&days=1&aqi=no&alerts=no'));
   return weather;
+}
+
+Future<http.Response> fetchLocations(final String location) {
+  final locations = http.get(Uri.parse(
+      'https://api.weatherapi.com/v1/forecast.json?key=$apiKey&q=$location'));
+  return locations;
 }
 
 class Condition {
