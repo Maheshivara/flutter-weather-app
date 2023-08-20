@@ -37,11 +37,23 @@ class WeatherDay {
   final String region;
   final String tzId;
   final List<WeatherHour> hours;
-  const WeatherDay(
-      {required this.name,
-      required this.region,
-      required this.tzId,
-      required this.hours});
+  const WeatherDay({
+    required this.name,
+    required this.region,
+    required this.tzId,
+    required this.hours,
+  });
+}
+
+class Location {
+  final String name;
+  final String region;
+  final String country;
+  const Location({
+    required this.name,
+    required this.region,
+    required this.country,
+  });
 }
 
 Future<WeatherDay> getWeather(final String location) async {
