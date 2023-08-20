@@ -26,6 +26,7 @@ class LocationWidget extends StatelessWidget {
             child: Text(
               '${city.name}/ ${city.region}/ ${city.country}',
               softWrap: true,
+              textAlign: TextAlign.center,
             ),
           ),
         ),
